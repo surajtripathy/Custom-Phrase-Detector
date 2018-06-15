@@ -7,23 +7,15 @@ label = df["Label"].values.T.tolist()
 predictions = []
 
 def process_cnt():
-    predictions_pos = []
     try:
+        count = 0
         for i in range(len(label)):
             if label[i] != "Not Found":
                 returned = chunked(sent[i]+'\n')
-                predictions.append(returned)
-                predictions_pos.append(i)
                 if returned != None:
-                    print(returned.strip())
+                    if returned.strip() == label[i]:
+                        count+=1
+        print(count)
     except Exception as e:
         print(str(e))
-    pred_index = 0
-    count_correct = 0
-    for i in predictions_pos:
-        if predictions[pred_index] != None:
-            if label[i] == predictions[pred_index].strip():
-                count_correct+=1
-        pred_index += 1
-    print(count_correct,len(predictions_pos))
 process_cnt()
