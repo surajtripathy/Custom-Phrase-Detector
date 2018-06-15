@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from sklearn import svm
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
@@ -11,16 +10,18 @@ df.loc[df["Label"] != 0,"Label"] = 1
 df_x = df["Sent"]
 df_y = df["Label"]
 cv = TfidfVectorizer(min_df=1,stop_words="english")
-x_train, x_test, y_train, y_test = train_test_split(df_x,df_y,test_size=0.2,random_state=0)
+x_train, x_test, y_train, y_test = train_test_split(df_x,df_y,test_size=0,random_state=0)
 x_traincv = cv.fit_transform(x_train.values.astype('U'))
 sv = svm.LinearSVC()
 y_train = y_train.astype('int')
 sv.fit(x_traincv,y_train)
-x_testcv = cv.transform(x_test.values.astype('U'))
-pred=sv.predict(x_testcv)
-act = np.array(y_test)
-count_correct = 0
+
+df_test = pd.read_csv(test_data_path,sep='\t',names=['Sent','Label'])
+df_test_x = df_test["Sent"]
+x_testcv = cv.transform(df_test_x.values.astype('U'))
+pred = list(sv.predict(x_testcv))
+sentence = []
 for i in range(len(pred)):
-    if pred[i]==act[i]:
-        count_correct+=1
-print(count_correct/len(pred))
+    if pred[i]!= 0:
+        sentence.append(df_test_x[i])
+print(sentence)
